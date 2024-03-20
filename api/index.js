@@ -24,7 +24,7 @@ const __dirname = path.resolve();
 
 const app = express();
 app.use(cors({
-  origin: 'https://http://localhost:5174',
+  origin: 'https://excel-blog.onrender.com',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, // enable cookies
   optionsSuccessStatus: 204,
