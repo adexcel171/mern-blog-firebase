@@ -31,12 +31,6 @@ app.use(cors({
   allowedHeaders: 'Content-Type, Authorization'
 }));
 
-// Add COOP policy here
-app.use((req, res, next) => {
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-  next();
-});
-
 app.use(express.json());
 app.use(cookieParser());
 
