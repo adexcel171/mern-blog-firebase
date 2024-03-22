@@ -66,7 +66,7 @@ export default function SignIn() {
               <Label value='Your email' />
               <TextInput
                 type='email'
-                placeholder='name@company.com'
+                placeholder=' enter email'
                 id='email'
                 onChange={handleChange}
               />
@@ -75,7 +75,7 @@ export default function SignIn() {
               <Label value='Your password' />
               <TextInput
                 type='password'
-                placeholder='**********'
+                placeholder='enter password'
                 id='password'
                 onChange={handleChange}
               />
