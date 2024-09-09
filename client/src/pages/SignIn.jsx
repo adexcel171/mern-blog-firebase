@@ -10,13 +10,19 @@ import {
 import OAuth from '../components/OAuth';
 
 export default function SignIn() {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
   const { loading, error: errorMessage } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
@@ -30,18 +36,17 @@ export default function SignIn() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (data.success === false) {
-        dispatch(signInFailure(data.message));
+      if (!res.ok) {
+        dispatch(signInFailure(data.message || 'Sign in failed'));
+        return;
       }
-
-      if (res.ok) {
-        dispatch(signInSuccess(data));
-        navigate('/');
-      }
+      dispatch(signInSuccess(data));
+      navigate('/');
     } catch (error) {
       dispatch(signInFailure(error.message));
     }
   };
+
   return (
     <div className='min-h-screen mt-20'>
       <div className='flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5'>
@@ -59,15 +64,15 @@ export default function SignIn() {
           </p>
         </div>
         {/* right */}
-
         <div className='flex-1'>
           <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
             <div>
               <Label value='Your email' />
               <TextInput
                 type='email'
-                placeholder=' enter email'
+                placeholder='Enter email'
                 id='email'
+                value={formData.email}
                 onChange={handleChange}
               />
             </div>
@@ -75,8 +80,9 @@ export default function SignIn() {
               <Label value='Your password' />
               <TextInput
                 type='password'
-                placeholder='enter password'
+                placeholder='Enter password'
                 id='password'
+                value={formData.password}
                 onChange={handleChange}
               />
             </div>
@@ -97,7 +103,7 @@ export default function SignIn() {
             <OAuth />
           </form>
           <div className='flex gap-2 text-sm mt-5'>
-            <span>Dont Have an account?</span>
+            <span>Don't have an account?</span>
             <Link to='/sign-up' className='text-blue-500'>
               Sign Up
             </Link>

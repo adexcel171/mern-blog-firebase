@@ -1,15 +1,12 @@
 import Comment from '../models/comment.model.js';
+import { errorHandler } from '../utils/error.js'; // Adjust the path as per your project structure
 
 export const createComment = async (req, res, next) => {
   try {
-    const { content, postId, userId } = req.body;
+    const { content, postId } = req.body;
+    const userId = req.user.id; // Use the authenticated user's ID
 
-    if (userId !== req.user.id) {
-      return next(
-        errorHandler(403, 'You are not allowed to create this comment')
-      );
-    }
-
+    // Create the comment without checking userId
     const newComment = new Comment({
       content,
       postId,
@@ -19,9 +16,10 @@ export const createComment = async (req, res, next) => {
 
     res.status(200).json(newComment);
   } catch (error) {
-    next(error);
+    next(error); // Pass any caught error to the error handling middleware
   }
 };
+
 
 export const getPostComments = async (req, res, next) => {
   try {

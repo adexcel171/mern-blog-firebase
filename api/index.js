@@ -7,42 +7,35 @@ import postRoutes from './routes/post.route.js';
 import commentRoutes from './routes/comment.route.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import cors from "cors"
+import cors from "cors";
 
 dotenv.config();
 
 mongoose
-  .connect(process.env.MONGO)
+  .connect(process.env.MONGO, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log('MongoDb is connected');
   })
   .catch((err) => {
-    console.log(err);
+    console.log('Error connecting to MongoDB:', err);
   });
 
 const __dirname = path.resolve();
 
 const app = express();
 app.use(cors({
-  origin: 'https://excel-blog.onrender.com',
+  origin: 'http://localhost:5173',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, // enable cookies
   optionsSuccessStatus: 204,
   allowedHeaders: 'Content-Type, Authorization'
 }));
 
-// Add COOP policy here
-app.use((req, res, next) => {
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-  next();
-});
-
 app.use(express.json());
 app.use(cookieParser());
-
-app.listen(3000, () => {
-  console.log('Server is running on port 3000!');
-});
 
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
@@ -55,12 +48,15 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
 });
 
+// Error handling middleware
 app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
-  res.status(statusCode).json({
+  console.error('Server Error:', err.stack);
+  res.status(err.status || 500).json({
     success: false,
-    statusCode,
-    message,
+    message: err.message || 'Internal Server Error',
   });
+});
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000!');
 });

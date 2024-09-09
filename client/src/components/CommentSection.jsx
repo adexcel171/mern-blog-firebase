@@ -1,4 +1,4 @@
-import { Alert, Button, Modal, TextInput, Textarea } from 'flowbite-react';
+import { Alert, Button, Modal, Textarea } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -13,9 +13,11 @@ export default function CommentSection({ postId }) {
   const [showModal, setShowModal] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState(null);
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (comment.length > 200) {
+      setCommentError('Comment cannot exceed 200 characters');
       return;
     }
     try {
@@ -35,6 +37,8 @@ export default function CommentSection({ postId }) {
         setComment('');
         setCommentError(null);
         setComments([data, ...comments]);
+      } else {
+        setCommentError(data.message || 'An error occurred while creating the comment');
       }
     } catch (error) {
       setCommentError(error.message);
@@ -103,13 +107,13 @@ export default function CommentSection({ postId }) {
         method: 'DELETE',
       });
       if (res.ok) {
-        const data = await res.json();
         setComments(comments.filter((comment) => comment._id !== commentId));
       }
     } catch (error) {
       console.log(error.message);
     }
   };
+
   return (
     <div className='max-w-2xl mx-auto w-full p-3'>
       {currentUser ? (
